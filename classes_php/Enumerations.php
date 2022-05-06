@@ -3,7 +3,7 @@ include("BaseEnum.php");
 
 abstract class Format extends BaseEnum {
     const BMP = "bmp";
-    const JPG = "jpg";
+    const JPG = "jpeg";
     const PDF = "pdf";
     const PNG = "png";
     const PNM = "pnm";

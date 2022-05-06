@@ -5,7 +5,7 @@ include_once("ScannerOptions.php");
 class Scanimage implements IScanner {
     private function CommandLine($scanRequest) {
         $cmd = Config::Scanimage;
-        $cmd .= " --format='" . Config::OutputExtension . "'";
+        $cmd .= " --format='" . $scanRequest->format . "'";
         
         // Set device
         if (isset($scanRequest->device)) {
