@@ -305,6 +305,7 @@
                 data: page.values()
             }).done(function (data) {
                 window.clearInterval(timer);
+                page.refreshPreviewImage();
                 $("#preview").removeAttr("disabled");
             });
         },
