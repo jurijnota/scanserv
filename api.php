@@ -95,9 +95,8 @@ class Api {
     public static function HandleFormatListRequest() {
         if (!System::HasConvert()) return array(Format::OutputExtension);
         
-        $formats = array(Format::BMP,
+        $formats = array(Format::PNM,
                          Format::JPG,
-                         Format::PDF,
                          Format::PNG,
                          Format::TIFF);
         sort($formats);
