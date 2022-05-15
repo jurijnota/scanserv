@@ -73,7 +73,7 @@ final class ScannerOptions {
         }
 
         $devicePattern = "/[Oo]ptions specific to device `(.+)'/";
-        $allMatched = "/[ ]*([^\s]+) (.+) (\[.+\])/";
+        $allMatched = "/[ ]*([^\s]+) (.+) \[(.+)\]/";
 
         for ($i = 0, $d = -1; $i < count($output); ++$i) {
             if (preg_match($devicePattern, $output[$i], $matched)) {
@@ -83,17 +83,29 @@ final class ScannerOptions {
                 $scanner["name"] = $name;
                 $scanner["description"] = $devices[$name];
                 $scanners[++$d] = $scanner;
-            } else if (preg_match($allMatched, $output[$i], $matched)) { 
+            } else if (preg_match($allMatched, $output[$i], $matched)) {
                 // Parsing options for the current SANE device
                 $option = new ScannerOption();
                 $key = preg_replace("/^[-]{1,2}/","",$matched[1]);
                 $option->name = $matched[1];
-                $option->defaultValue = preg_replace("/(\[|\])/","",$matched[3]);
+                $option->defaultValue = $matched[3];
                 
                 if (strstr($matched[2],"|")) { 
                     // Fixed set of enumerated values, separated with "|"
                     $option->values = explode("|",$matched[2]);
                     $option->isRange = false;
+                    $tmp = array();
+                    for ($j = 0; $j < count($option->values); ++$j) {
+                        if (strstr($option->values[$j], "[") && strstr($option->values[$j], "]")) {
+                            if (count($tmp) > 0) {
+                                $tmp = array($tmp[0], preg_replace("/(\[.+\])/","",$option->values[$j]));
+                            }
+                            else {
+                                $tmp = array(preg_replace("/(\[.+\])/","",$option->values[$j]));
+                            }
+                        }
+                    }
+                    $option->values = array_merge($option->values, $tmp);
                 } else if (strstr($matched[2],"..")) {
                     // Values ranging from low to high, i.e., lo ".." hi
                     $option->values = explode("..",$matched[2]);
@@ -102,13 +114,6 @@ final class ScannerOptions {
                     // Single element, manually create array
                     $option->values = array($matched[2]);
                     $option->isRange = false;
-                }
-                
-                // Floor all numerical option values... no reason found to keep
-                // them as floats
-                if (is_numeric($option->defaultValue)) {
-                    $option->defaultValue = floor($option->defaultValue);
-                    for ($n = 0; $n < count($option->values); ++$n) $option->values[$n] = floor($option->values[$n]);
                 }
                 
                 // Check whether interface accepts a range for resolution and
