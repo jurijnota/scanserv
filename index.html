@@ -157,7 +157,10 @@
 
             <div class="col-md-6">
                 <div id="image">
-                    <img id="previmage" src="#" alt="" style="display: none" />
+                    <img id="previmage" src="#" style="display:none" />
+                    <div id="pleasewait" style="display:none">
+                        Please wait...
+                    </div>
                 </div>
             </div>
         </div>
@@ -288,8 +291,8 @@
         preview: function () {
             $("#preview").attr("disabled", "disabled");
             $("#previmage").attr("src","#");
-            $("#previmage").attr("alt", "Please wait...");
-            $("#previmage").attr("style", "display:block");
+            $("#previmage").attr("style", "display:none");
+            $("#pleasewait").attr("style", "display:block; color:white");
 
             // Start the scan
             api.call({
@@ -298,6 +301,8 @@
             }).done(function (data) {
                 page.refreshPreviewImage();
                 $("#preview").removeAttr("disabled");
+                $("#previmage").attr("style", "display:block");
+                $("#pleasewait").attr("style", "display:none");
             });
         },
 
@@ -345,12 +350,16 @@
     
         scan: function () {
             $("#scan").attr("disabled", "disabled");
+            $("#previmage").attr("style","filter: blur(3px)");
+            $("#pleasewait").attr("style", "display:block; color:black");
 
             api.call({
                 type: 'scan',
                 data: page.values()
             }).done(function (data) {
                 $("#scan").removeAttr("disabled");
+                $("#previmage").attr("style","");
+                $("#pleasewait").attr("style", "display:none");
                 page.notify(data);
                 page.listfiles();
             });
