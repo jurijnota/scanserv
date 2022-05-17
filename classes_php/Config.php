@@ -8,7 +8,11 @@ class Config {
     // your installation.
     const Scanimage  = "/usr/bin/scanimage";
     const Convert  = "/usr/bin/convert";
-    const PreviewFilter = "/usr/bin/convert 2>/dev/null  - -trim -quality 30  ";
+    const PreviewFilter = "/usr/bin/convert 2>/dev/null  - -quality 30  ";
+    
+    // Correct scanner driver with offset
+    const TOffset = 2.2997884;
+    const LOffset = 2.999724;
 
 	// Use an empty filter by default. The spirit of the default implementation
 	// is to create non-lossy scans with no post processing. Should you wish to 
@@ -22,7 +26,7 @@ class Config {
     // type below
     // TIFF is supported by most scanners by default and it is a good option if
     // no filters are used
-    const OutputExtension = Format::TIFF;
+    const OutputExtension = Format::JPG;
 
     // Only useful for development debugging
     const BypassSystemExecute = false;

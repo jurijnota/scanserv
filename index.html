@@ -34,7 +34,7 @@
 
         <h1>scanserv</h1>
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -155,9 +155,9 @@
                 </div>
             </div>
 
-            <div class="col-md-7">
+            <div class="col-md-6">
                 <div id="image">
-                    <img id="previmage" src="#" alt="" width=423 style="display: none" />
+                    <img id="previmage" src="#" alt="" style="display: none" />
                 </div>
             </div>
         </div>
@@ -179,21 +179,13 @@
     var jcropmanager = {
 
         previewDpi: 50, 
-        millimetresPerInch: 25.4, 
-        a4: {
-            width: 215,
-            height: 296
-        },
-        canvas: {
-            width: 215 * this.previewDpi / this.millimetresPerInch,
-            height: 296 * this.previewDpi / this.millimetresPerInch
-        },
+        millimetresPerInch: 25.4,
 
         jcrop_api: null,
 
         dotsToMm: function (dots) {
             var millimetresPerDot = this.millimetresPerInch / this.previewDpi;
-            return Math.round(dots * millimetresPerDot);
+            return dots * millimetresPerDot;
         },
 
         mmToDots: function (mm) {
@@ -294,9 +286,9 @@
         },
 
         preview: function () {
-            // Keep reloading the preview image
             $("#preview").attr("disabled", "disabled");
-            var timer = window.setInterval(page.refreshPreviewImage, 1000);
+            $("#previmage").attr("src","#");
+            $("#previmage").attr("alt", "Please wait...");
             $("#previmage").attr("style", "display:block");
 
             // Start the scan
@@ -304,7 +296,6 @@
                 type: 'preview',
                 data: page.values()
             }).done(function (data) {
-                window.clearInterval(timer);
                 page.refreshPreviewImage();
                 $("#preview").removeAttr("disabled");
             });
@@ -328,7 +319,7 @@
                     for (var i = 0; i < data.data.length; i++) {
                         format.append("<option value=\"" + data.data[i] + "\">" + data.data[i].toUpperCase() + "</option>");
                     }
-                    format.val("tiff");
+                    format.val("jpeg");
                 }
             });
         },
@@ -412,17 +403,17 @@
                 type: 'refreshDevices'
             }).done(function (data) {
                 $("#refreshdev").removeAttr("disabled");
-                page.getoptions(data);
+                page.getoptions();
             });
         },
 
         values: function () {
             if (arguments.length === 0) {
                 return {
-                    top: parseInt($("#t").val()),
-                    left: parseInt($("#l").val()),
-                    width: parseInt($("#x").val()),
-                    height: parseInt($("#y").val()),
+                    top: parseFloat($("#t").val()),
+                    left: parseFloat($("#l").val()),
+                    width: parseFloat($("#x").val()),
+                    height: parseFloat($("#y").val()),
                     mode: $("#mode").val(),
                     depth: 8,
                     resolution: parseInt($("#resolution").val()),
@@ -579,7 +570,7 @@
                     brightness: brightness,
                     contrast: contrast,
                     source: source,
-                    format: "tiff"
+                    format: "jpeg"
                 });
 
                 page.save();

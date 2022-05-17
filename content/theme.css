@@ -28,9 +28,18 @@
 
 #image {
     background-color: #3C98E4;
-    height: 584px;
-    width: 423px;
+    height: 572px;
+    width: 404px;
     border: 1px solid black;
+    font-size: xx-large;
+    font-weight: bold;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+#previmage {
+    height: 572px;
+    width: 404px;
 }
 
 label, th {

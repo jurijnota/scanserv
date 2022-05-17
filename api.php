@@ -20,11 +20,7 @@ class Api {
         return array("cmd" => $cmd, "output" => $output, "ret" => $ret);
     }
 
-    public static function HandlePreviewRequest($request) {
-        $wait=' -size 423x584 -fill white -background "#3C98E4" -pointsize 30 -gravity North label:"\nPlease wait..." ';
-        $cmd = Config::Convert.' '.$wait.' '.Config::PreviewDirectory.'preview.jpg';
-        System::Execute($cmd, $output, $ret);
-        
+    public static function HandlePreviewRequest($request) {        
         $clientRequest = $request->data;
         
         $scanRequest = new ScanRequest();
@@ -34,11 +30,8 @@ class Api {
         if (isset($clientRequest->contrast)) $scanRequest->options["contrast"] = (int)$clientRequest->contrast;
         if (isset($clientRequest->source)) $scanRequest->options["source"] = $clientRequest->source;
         
-        if (isset($clientRequest->format)) {
-            $scanRequest->format = $clientRequest->format;
-        } else {
-            $scanRequest->format = Config::OutputExtension;
-        }
+        // Force JPG preview
+        $scanRequest->format = Format::JPG;
         
         if (isset($clientRequest->device)) {
             $scanRequest->device = $clientRequest->device;
@@ -47,17 +40,15 @@ class Api {
             $scanRequest->options["resolution"] = array_key_exists("resolution",$scannerOptions) ? $scannerOptions["resolution"]->values[0] : 0;
         }
         
-        $scanRequest->outputFilepath = Config::PreviewDirectory."preview.tif";
+        $scanRequest->outputFilepath = Config::PreviewDirectory."preview.jpg";
         $scanner = new Scanimage();
         $scanResponse = $scanner->Execute($scanRequest);    
         return $scanResponse;
     }
 
     public static function HandlePreviewToJpegRequest() {
-        $cmd = Config::PreviewFilter.' '.Config::PreviewDirectory.'preview.jpg  <'.Config::PreviewDirectory.'preview.tif';
-        System::Execute($cmd, $output, $ret);
         $jpg=file_get_contents(Config::PreviewDirectory.'preview.jpg');
-        return array("cmd" => $cmd, "output" => $output, "ret" => $ret, "jpg" => base64_encode($jpg) );
+        return array( "jpg" => base64_encode($jpg) );
     }
 
     public static function HandleScanRequest($request) {
@@ -71,10 +62,10 @@ class Api {
         if (isset($clientRequest->contrast)) $scanRequest->options["contrast"] = (int)$clientRequest->contrast;
         if (isset($clientRequest->source)) $scanRequest->options["source"] = $clientRequest->source;
         if (isset($clientRequest->depth)) $scanRequest->options["depth"] = (int)$clientRequest->depth;
-        if (isset($clientRequest->top)) $scanRequest->options["t"] = (int)$clientRequest->top;
-        if (isset($clientRequest->left)) $scanRequest->options["l"] = (int)$clientRequest->left;
-        if (isset($clientRequest->height)) $scanRequest->options["y"] = (int)$clientRequest->height;
-        if (isset($clientRequest->width)) $scanRequest->options["x"] = (int)$clientRequest->width;
+        if (isset($clientRequest->top)) $scanRequest->options["t"] = (float)$clientRequest->top + Config::TOffset;
+        if (isset($clientRequest->left)) $scanRequest->options["l"] = (float)$clientRequest->left + Config::LOffset;
+        if (isset($clientRequest->height)) $scanRequest->options["y"] = (float)$clientRequest->height;
+        if (isset($clientRequest->width)) $scanRequest->options["x"] = (float)$clientRequest->width;
         
         if (isset($clientRequest->device)) 
             $scanRequest->device = $clientRequest->device;

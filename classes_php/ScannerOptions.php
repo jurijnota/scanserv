@@ -73,7 +73,7 @@ final class ScannerOptions {
         }
 
         $devicePattern = "/[Oo]ptions specific to device `(.+)'/";
-        $allMatched = "/[ ]*([^\s]+) (.+) \[(.+)\]/";
+        $allMatched = "/\s*([^\s]+) (.+?)(?:dpi)?(?:\(.*\))?\s\[(.+)\]/";
 
         for ($i = 0, $d = -1; $i < count($output); ++$i) {
             if (preg_match($devicePattern, $output[$i], $matched)) {
@@ -92,7 +92,9 @@ final class ScannerOptions {
                 
                 if (strstr($matched[2],"|")) { 
                     // Fixed set of enumerated values, separated with "|"
-                    $option->values = explode("|",$matched[2]);
+                    $tmp = array();
+                    preg_match_all("/[|]?([^|]*)/", $matched[2], $tmp, PREG_PATTERN_ORDER);
+                    $option->values = array_splice($tmp[1], 0, -1);
                     $option->isRange = false;
                     $tmp = array();
                     for ($j = 0; $j < count($option->values); ++$j) {
@@ -108,7 +110,9 @@ final class ScannerOptions {
                     $option->values = array_merge($option->values, $tmp);
                 } else if (strstr($matched[2],"..")) {
                     // Values ranging from low to high, i.e., lo ".." hi
-                    $option->values = explode("..",$matched[2]);
+                    $tmp = array();
+                    preg_match_all("/([-+]?\d+)/", $matched[2], $tmp, PREG_PATTERN_ORDER);
+                    $option->values = $tmp[1];
                     $option->isRange = true;
                 } else {
                     // Single element, manually create array
