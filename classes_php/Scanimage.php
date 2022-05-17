@@ -5,9 +5,7 @@ include_once("ScannerOptions.php");
 class Scanimage implements IScanner {
     private function CommandLine($scanRequest) {
         $cmd = Config::Scanimage;
-        if ($scanRequest->format != Format::PDF)
-            $cmd .= " --format='" . $scanRequest->format . "'";
-        
+
         // Set device
         if (isset($scanRequest->device)) {
             $cmd .= " --device-name='" . $scanRequest->device . "'";
@@ -28,18 +26,25 @@ class Scanimage implements IScanner {
             
             $cmd .= " " . $scannerOptions[$key]->name . " '" . $value . "'";
         }
-        
-        // Make PDF a bit lighter
-        if ($scanRequest->format == Format::PDF) {
-            $cmd2 .= " -compress JPEG -quality 50 ";
-        }
 
-		// No output filter or default output format which is handled by scanimage directly
-		if (defined("Config::OutputFilter") || $scanRequest->format == Config::OutputExtension) {
-			$cmd = $cmd . ' > "' . $scanRequest->outputFilepath . '"';
-		} else {
-			$cmd = $cmd . ' | ' . Config::OutputFilter . ' "' . $scanRequest->outputFilepath . '"';
-		}
+        // Select format
+        switch ($scanRequest->format) {
+            case Format::PNM:
+            case Format::PNG:
+            case Format::TIFF:
+            case Format::JPG:
+                $cmd .= " --format='" . $scanRequest->format . "'";
+                $cmd = $cmd . ' > "' . $scanRequest->outputFilepath . '"';
+                break;
+            case Format::PDF:
+                $cmd .= " --format='" . Format::JPG . "'";
+                $cmd = $cmd . ' | ' . Config::Convert . ' - -compress jpeg -quality 100 pdf:- > "' . $scanRequest->outputFilepath . '"';
+                break;
+            case Format::BMP:
+                $cmd .= " --format='" . Format::TIFF . "'";
+                $cmd = $cmd . ' | ' . Config::Convert . ' - bmp:- > "' . $scanRequest->outputFilepath . '"';
+                break;
+        }
 
         return $cmd;
     }

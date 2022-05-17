@@ -77,7 +77,6 @@ class Api {
         
         $outputfile = Config::OutputDirectory . "Scan_" . time() . "." . $scanRequest->format;
         $scanRequest->outputFilepath = $outputfile;
-        $scanRequest->outputFilter = Config::OutputFilter;
         $scanner = new Scanimage();
         $scanResponse = $scanner->Execute($scanRequest);        
         return $scanResponse;
@@ -86,7 +85,9 @@ class Api {
     public static function HandleFormatListRequest() {
         if (!System::HasConvert()) return array(Format::OutputExtension);
         
-        $formats = array(Format::PNM,
+        $formats = array(Format::PDF,
+                         Format::BMP,
+                         Format::PNM,
                          Format::JPG,
                          Format::PNG,
                          Format::TIFF);
