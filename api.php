@@ -86,6 +86,7 @@ class Api {
         if (!System::HasConvert()) return array(Format::OutputExtension);
         
         $formats = array(Format::PDF,
+                         Format::OCR,
                          Format::BMP,
                          Format::PNM,
                          Format::JPG,

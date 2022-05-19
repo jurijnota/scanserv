@@ -40,6 +40,10 @@ class Scanimage implements IScanner {
                 $cmd .= " --format='" . Format::JPG . "'";
                 $cmd = $cmd . ' | ' . Config::Convert . ' - -compress jpeg -quality 100 pdf:- > "' . $scanRequest->outputFilepath . '"';
                 break;
+            case Format::OCR:
+                $cmd .= " --format='" . Format::JPG . "'";
+                $cmd = $cmd . ' | ' . Config::Ocr . ' - - -l ita pdf > "' . $scanRequest->outputFilepath . '"';
+                break;
             case Format::BMP:
                 $cmd .= " --format='" . Format::TIFF . "'";
                 $cmd = $cmd . ' | ' . Config::Convert . ' - bmp:- > "' . $scanRequest->outputFilepath . '"';

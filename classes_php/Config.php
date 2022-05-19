@@ -8,6 +8,7 @@ class Config {
     // your installation.
     const Scanimage  = "/usr/bin/scanimage";
     const Convert  = "/usr/bin/convert";
+    const Ocr = "/usr/bin/tesseract";
     
     // Correct scanner driver with offset
     const TOffset = 2.2997884;

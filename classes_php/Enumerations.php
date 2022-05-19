@@ -8,5 +8,6 @@ abstract class Format extends BaseEnum {
     const PNG = "png";
     const PNM = "pnm";
     const TIFF = "tiff";
+    const OCR = "ocr.pdf";
 }
 ?>
